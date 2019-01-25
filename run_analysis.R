@@ -7,25 +7,25 @@ if (!file.info('UCI HAR Dataset')$isdir) {
   unzip('./UCI-HAR-dataset.zip', exdir = getwd())
 }
 
-# Merges the training and the test sets to create one data set.
+#1.- Merges the training and the test sets to create one data set.
 x.train <- read.table('./UCI HAR Dataset/train/X_train.txt')
 x.test <- read.table('./UCI HAR Dataset/test/X_test.txt')
 x <- rbind(x.train, x.test)
-
-subj.train <- read.table('./UCI HAR Dataset/train/subject_train.txt')
-subj.test <- read.table('./UCI HAR Dataset/test/subject_test.txt')
-subj <- rbind(subj.train, subj.test)
 
 y.train <- read.table('./UCI HAR Dataset/train/y_train.txt')
 y.test <- read.table('./UCI HAR Dataset/test/y_test.txt')
 y <- rbind(y.train, y.test)
 
-# Extracts only the measurements on the mean and standard deviation for each measurement. 
+subj.train <- read.table('./UCI HAR Dataset/train/subject_train.txt')
+subj.test <- read.table('./UCI HAR Dataset/test/subject_test.txt')
+subj <- rbind(subj.train, subj.test)
+
+# 2.- Extracts only the measurements on the mean and standard deviation for each measurement. 
 features <- read.table('./UCI HAR Dataset/features.txt')
 mean.sd <- grep("-mean\\(\\)|-std\\(\\)", features[, 2])
 x.mean.sd <- x[, mean.sd]
 
-# Uses descriptive activity names to name the activities in the data set
+# 3.- Uses descriptive activity names to name the activities in the data set
 names(x.mean.sd) <- features[mean.sd, 2]
 names(x.mean.sd) <- tolower(names(x.mean.sd)) 
 names(x.mean.sd) <- gsub("\\(|\\)", "", names(x.mean.sd))
@@ -38,7 +38,7 @@ y[, 1] = activities[y[, 1], 2]
 colnames(y) <- 'activity'
 colnames(subj) <- 'subject'
 
-# Appropriately labels the data set with descriptive activity names.
+# 4.- Appropriately labels the data set with descriptive activity names.
 data <- cbind(subj, x.mean.sd, y)
 str(data)
 write.table(data, './Project/merged.txt', row.names = F)
@@ -48,3 +48,5 @@ average.df <- aggregate(x=data, by=list(activities=data$activity, subj=data$subj
 average.df <- average.df[, !(colnames(average.df) %in% c("subj", "activity"))]
 str(average.df)
 write.table(average.df, './Project/average.txt', row.names = F)
+
+
